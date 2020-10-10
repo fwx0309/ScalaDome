@@ -19,29 +19,50 @@ object D11_HOFunction {
     */
   def main(args: Array[String]): Unit = {
 
-    // 将方法转成函数
+    // 1.将方法转成函数
     val res1 = hoFunction(fun _)
     res1()
 
-    // 直接声明函数
+    // 2.直接声明函数
     // 函数不能声明返回值类型, 只能靠推导
     val f: () => Unit = () => println("f")
     val res2 = hoFunction(f)
     res2()
 
-    val op: (Int, Int) => Int = (a: Int, b: Int) => a + b
-    println(result(op)(1, 2))
+    // 3.匿名函数:
+    /**
+      * 没有名字的函数, 就是匿名函数
+      * 用处:
+      *         1. 作为实参, 直接传递给高阶函数
+      *         2. 直接作为高阶函数的返回值
+      * 2. 传递:
+      * foo((a:Int, b:Int) => a + b)
+      *
+      * 3. 在传递匿名函数的时候, 参数的类型一般可以利用上下文, 让scala去自动推导
+      *
+      * 4. f(_ + _)
+      * 要求: 1. 匿名只能有两个参数
+      *          2. 每个参数只使用了一次
+      *          3. 第一个_表示第一个参数, 第二个下划线表示第二个参数
+      */
+    println(result((a: Int, b: Int) => a + b)(1, 2))
+    println(result(_ + _)(1, 2))
+    println(result(_ * _)(1, 2))
+
+    // 4.filter Demo
+    val array = (1 to 10).toArray
+    println(filterDemo(array, (a: Int) => a > 5).mkString(","))
   }
 
   /**
-    * 普通函数
+    * fun 普通函数
     */
   def fun() = {
     println("function!")
   }
 
   /**
-    * 高阶函数
+    * hoFunction 高阶函数
     *
     * @param x
     */
@@ -51,8 +72,23 @@ object D11_HOFunction {
     x
   }
 
+  /**
+    * fun 高阶函数
+    *
+    * @param op
+    * @return
+    */
   def result(op: (Int, Int) => Int) = {
     println(op)
     op
+  }
+
+  /**
+    * @param arr 需要过滤的数据
+    * @param op  过滤规则
+    * @return
+    */
+  def filterDemo(arr: Array[Int], op: (Int) => Boolean) = {
+    for (elem <- arr if (op(elem))) yield elem
   }
 }
